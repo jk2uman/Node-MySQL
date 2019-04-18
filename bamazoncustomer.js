@@ -1,6 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-require("console.table");
 
 // Initializes the connection variable to sync with a MySQL database
 var connection = mysql.createConnection({
