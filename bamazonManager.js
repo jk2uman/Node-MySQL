@@ -62,6 +62,17 @@ function loadManagerMenu() {
       });
   }
 
+  // Query the DB for low inventory products
+function loadLowInventory() {
+  // Selects all of the products that have a quantity of 5 or less
+  connection.query("SELECT * FROM products WHERE stock_quantity <= 5", function(err, res) {
+    if (err) throw err;
+    // Draw the table in the terminal using the response, load the manager menu
+    console.table(res);
+    loadManagerMenu();
+  });
+}
+
   // Prompt the manager for a product to replenish
 function addToInventory(inventory) {
     console.table(inventory);
