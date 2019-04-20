@@ -135,7 +135,7 @@ function addQuantity(product, quantity) {
       }
     );
   }
-
+  // This doesn't seem to work whatever input you can give me on how to fix it would be appreciated
   // Gets all departments, then gets the new product info, then inserts the new product into the db
 function addNewProduct() {
     getDepartments(function(err, departments) {
