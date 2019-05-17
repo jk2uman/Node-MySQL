@@ -1,6 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-
 var connection = mysql.createConnection({
   host: "localhost",
   // Your port; if not 3306
@@ -13,7 +12,7 @@ var connection = mysql.createConnection({
 });
 
 // Creates the connection with the server and loads the manager menu upon a successful connection
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
   }
@@ -22,7 +21,7 @@ connection.connect(function(err) {
 
 // Get product data from the database
 function loadManagerMenu() {
-  connection.query("SELECT * FROM products", function(err, res) {
+  connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
 
     // Load the possible manager menu options, pass in the products data
@@ -45,7 +44,7 @@ function loadManagerOptions(products) {
       ],
       message: "What would you like to do?"
     })
-    .then(function(val) {
+    .then(function (val) {
       switch (val.choice) {
         case "View Products for Sale":
           console.table(products);
@@ -71,7 +70,7 @@ function loadManagerOptions(products) {
 // Query the DB for low inventory products
 function loadLowInventory() {
   // Selects all of the products that have a quantity of 5 or less
-  connection.query("SELECT * FROM products WHERE stock_quantity <= 5", function(
+  connection.query("SELECT * FROM products WHERE stock_quantity <= 5", function (
     err,
     res
   ) {
@@ -91,12 +90,12 @@ function addToInventory(inventory) {
         type: "input",
         name: "choice",
         message: "What is the ID of the item you would you like add to?",
-        validate: function(val) {
+        validate: function (val) {
           return !isNaN(val);
         }
       }
     ])
-    .then(function(val) {
+    .then(function (val) {
       var choiceId = parseInt(val.choice);
       var product = checkInventory(choiceId, inventory);
 
@@ -120,12 +119,12 @@ function promptManagerForQuantity(product) {
         type: "input",
         name: "quantity",
         message: "How many would you like to add?",
-        validate: function(val) {
+        validate: function (val) {
           return val > 0;
         }
       }
     ])
-    .then(function(val) {
+    .then(function (val) {
       var quantity = parseInt(val.quantity);
       addQuantity(product, quantity);
     });
@@ -136,14 +135,14 @@ function addQuantity(product, quantity) {
   connection.query(
     "UPDATE products SET stock_quantity = ? WHERE item_id = ?",
     [product.stock_quantity + quantity, product.item_id],
-    function(err, res) {
+    function (err, res) {
       // Let the user know the purchase was successful, re-run loadProducts
       console.log(
         "\nSuccessfully added " +
-          quantity +
-          " " +
-          product.product_name +
-          "'s!\n"
+        quantity +
+        " " +
+        product.product_name +
+        "'s!\n"
       );
       loadManagerMenu();
     }
@@ -151,7 +150,7 @@ function addQuantity(product, quantity) {
 }
 // Gets all departments, then gets the new product info, then inserts the new product into the database
 function addNewProduct() {
-  getProducts(function(err, products) {
+  getProducts(function (err, products) {
     getProductInfo(products).then(insertNewProduct);
   });
 }
@@ -174,7 +173,7 @@ function getProductInfo(products) {
       type: "input",
       name: "price",
       message: "How much does it cost?",
-      validate: function(val) {
+      validate: function (val) {
         return val > 0;
       }
     },
@@ -182,7 +181,7 @@ function getProductInfo(products) {
       type: "input",
       name: "quantity",
       message: "How many do we have?",
-      validate: function(val) {
+      validate: function (val) {
         return !isNaN(val);
       }
     }
@@ -194,7 +193,7 @@ function insertNewProduct(val) {
   connection.query(
     "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)",
     [val.product_name, val.department_name, val.price, val.quantity],
-    function(err, res) {
+    function (err, res) {
       if (err) throw err;
       console.log(val.product_name + " ADDED TO BAMAZON!\n");
       // When done, re run loadManagerMenu, effectively restarting our app
@@ -210,7 +209,7 @@ function getProducts(cb) {
 
 // Is passed an array of departments from the db, then returns an array of just the department names
 function getDepartmentNames(products) {
-  return products.map(function(product) {
+  return products.map(function (product) {
     return product.department_name;
   });
 }

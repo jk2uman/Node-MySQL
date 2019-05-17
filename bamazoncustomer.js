@@ -1,6 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-
 // Initializes the connection variable to sync with a MySQL database
 var connection = mysql.createConnection({
   host: 'localhost',
@@ -14,7 +13,7 @@ var connection = mysql.createConnection({
 });
 
 // Creates the connection with the server and loads the product data upon a successful connection
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
   }
@@ -24,7 +23,7 @@ connection.connect(function(err) {
 // Function to load the products table from the database and print results to the console
 function loadProducts() {
   // Selects all of the data from the MySQL products table
-  connection.query("SELECT * FROM products", function(err, res) {
+  connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
 
     // Draw the table in the terminal using the response
@@ -44,12 +43,12 @@ function promptCustomerForItem(inventory) {
         type: "input",
         name: "choice",
         message: "What is the ID of the item you would you like to purchase? [Quit with Q]",
-        validate: function(val) {
+        validate: function (val) {
           return !isNaN(val) || val.toLowerCase() === "q";
         }
       }
     ])
-    .then(function(val) {
+    .then(function (val) {
       // Check if the user wants to quit the program
       checkIfShouldExit(val.choice);
       var choiceId = parseInt(val.choice);
@@ -76,12 +75,12 @@ function promptCustomerForQuantity(product) {
         type: "input",
         name: "quantity",
         message: "How many would you like? [Quit with Q]",
-        validate: function(val) {
+        validate: function (val) {
           return val > 0 || val.toLowerCase() === "q";
         }
       }
     ])
-    .then(function(val) {
+    .then(function (val) {
       // Check if the user wants to quit the program
       checkIfShouldExit(val.quantity);
       var quantity = parseInt(val.quantity);
@@ -103,7 +102,7 @@ function makePurchase(product, quantity) {
   connection.query(
     "UPDATE products SET stock_quantity = stock_quantity - ?, product_sales = product_sales + ? WHERE item_id = ?",
     [quantity, product.price * quantity, product.item_id],
-    function(err, res) {
+    function (err, res) {
       // Let the user know the purchase was successful, re-run loadProducts
       console.log("\nSuccessfully purchased " + quantity + " " + product.product_name + "'s!");
       loadProducts();
